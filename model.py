@@ -13,22 +13,21 @@ class QNet(nn.Module):
     def __init__(self, input_size, output_size, hidden_size=256):
         super().__init__()
         self.linear1 = nn.Linear(input_size, hidden_size).to(device)
-        #self.linear2 = nn.Linear(hidden_size, hidden_size).to(device)
+        
         self.linear2 = nn.Linear(hidden_size, hidden_size//2).to(device)
         self.value_stream = nn.Linear(hidden_size//2, 1).to(device)
         self.advantage_stream = nn.Linear(hidden_size//2, output_size).to(device)
-        #self.linear2 = nn.Linear(hidden_size, output_size).to(device)
+        
 
     def forward(self, x):
         x = F.relu(self.linear1(x))
         x = F.relu(self.linear2(x))
-        #x = F.relu(self.linear3(x))
+        
         value = self.value_stream(x)
         advantage = self.advantage_stream(x)
 
         return value + advantage - advantage.mean(dim=1, keepdim=True)
-        # x = self.linear2(x)
-        # return x
+        
 
     def save(self, file_name='model.pth'):
         model_folder_path = './model'
@@ -68,7 +67,7 @@ class QTrainer:
 
         states = torch.stack(states)
         
-        #extras = torch.stack(extras)
+        
         actions = torch.tensor(actions).unsqueeze(1).to(device)
         rewards = torch.tensor(rewards).unsqueeze(1).to(device)
         next_states = torch.stack(next_states).to(device)
